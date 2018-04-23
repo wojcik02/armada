@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+
+
+
+<VBox  fx:id="MainPane" xmlns:fx="http://javafx.com/fxml/1"  fx:controller="armada.MainController"    >
+
+<HBox>
+
+<AnchorPane fx:id="Board" onMouseClicked="#AddShip" prefHeight="350" prefWidth="500"  >
+
+</AnchorPane>
+<VBox  fx:id="Right" prefHeight="250" prefWidth="200" >
+<TextArea fx:id="Log"  prefHeight="25" editable="false">Armada 0.0.1</TextArea>
+</VBox>
+
+
+</HBox>
+
+<HBox fx:id="buttons">
+<Button fx:id="newFleet" text="Nowa flota" onMouseClicked="#NewFleet"> </Button>
+
+<Button text="Przemieść" onMouseClicked="#MoveShip"> </Button>
+<Button text="Koniec Ruchu" onMouseClicked="#EndMove"> </Button>
+
+
+</HBox>
+</VBox>
+
