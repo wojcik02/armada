@@ -62,7 +62,7 @@ public class Ship {
 		this.speedTable.add("111");
 		this.speed=DataBase.getSpeedDB(name);
 		String CardImgUlr= "IMG/"+DataBase.getImgUrlDB(name);
-		this.cardOfShip = new Image( CardImgUlr, 175, 250, false, false);
+		this.cardOfShip = new Image( CardImgUlr, 285, 490, false, false);
 		this.boardModel = new Image("IMG/cr92a-base.jpg", 30, 60, false, false);
 		this.shipOnBoard = new Pane();
 		shipOnBoard.setStyle("-fx-background-color: #000000");

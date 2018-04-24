@@ -40,10 +40,7 @@ public class BoardView {
 
 	
 	public static void usunInfo(VBox box) {
-		
 		box.getChildren().removeAll(name,speed, card);
-		System.out.println("usuwam info");
-
 	}
 	
 	public static void uzupe³nijInformacje(VBox box, Ship activeShip) {
@@ -53,7 +50,7 @@ public class BoardView {
 		card = new ImageView(activeShip.getCardOfShip());
 			
 				box.getChildren().removeAll(name,speed,card);
-				box.getChildren().addAll(name,speed, card);
+				box.getChildren().addAll(card);
 				
 	
 	}

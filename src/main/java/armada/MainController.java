@@ -14,6 +14,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -23,7 +24,7 @@ public class MainController {
 	@FXML
 	AnchorPane Board;
 	@FXML
-	VBox MainPane;
+	GridPane MainPane = new GridPane();
 	@FXML
 	TextArea Log;
 	@FXML
@@ -32,6 +33,9 @@ public class MainController {
 	Button addShipButton = new Button();
 	@FXML Button newFleet;
 	@FXML HBox buttons;
+	
+	
+	 
 
 	static Ship activeShip;
 	static Pane selectedShip;
@@ -41,13 +45,13 @@ public class MainController {
 	static String activity = "new";
 	static HashMap<Pane, Ship> ships = new HashMap<Pane, Ship>();
 	ComboBox<String> comboBox = new ComboBox<String>();
-	
-
 	ArrayList<Ship> rebelShips = new ArrayList<Ship>();
 	ArrayList<Ship> empireShips = new ArrayList<Ship>();
 
 	public MainController() {
+		
 		System.out.println("Odpalamy gre");
+		
 
 	}
 
