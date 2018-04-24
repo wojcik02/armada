@@ -18,6 +18,15 @@ public class Ship {
 	Image cardOfShip;
 	Image boardModel;
 	
+	
+	public Image getCardOfShip() {
+		return cardOfShip;
+	}
+
+	public void setCardOfShip(Image cardOfShip) {
+		this.cardOfShip = cardOfShip;
+	}
+	
 	public Pane getShipOnBoard() {
 		return shipOnBoard;
 	}
@@ -45,13 +54,15 @@ public class Ship {
 	}
 
 
-	public Ship(String name, int speed) {
+	public Ship(String name) {
 		
 		this.name = name;
 		this.speedTable.add("123");
 		this.speedTable.add("212");
 		this.speedTable.add("111");
-		this.speed=speed;
+		this.speed=DataBase.getSpeedDB(name);
+		String CardImgUlr= "IMG/"+DataBase.getImgUrlDB(name);
+		this.cardOfShip = new Image( CardImgUlr, 175, 250, false, false);
 		this.boardModel = new Image("IMG/cr92a-base.jpg", 30, 60, false, false);
 		
 		this.shipOnBoard = new Pane();

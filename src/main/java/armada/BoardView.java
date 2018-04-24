@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Light.Point;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -23,6 +24,7 @@ public class BoardView {
 	//INFORMACJE ELEMNTY
 	static Label name = new Label();
 	static Label speed = new Label();
+	static ImageView card = new ImageView();
 
 	
 	//MOVE TOKEN ELEMENTY
@@ -38,7 +40,8 @@ public class BoardView {
 
 	
 	public static void usunInfo(VBox box) {
-		box.getChildren().removeAll(name,speed);
+		
+		box.getChildren().removeAll(name,speed, card);
 		System.out.println("usuwam info");
 
 	}
@@ -47,9 +50,11 @@ public class BoardView {
 
 		name.setText(activeShip.getName());
 		speed.setText("Prêdkoœæ "+ activeShip.getSpeed());
+		card = new ImageView(activeShip.getCardOfShip());
 			
-				box.getChildren().removeAll(name,speed);
-				box.getChildren().addAll(name,speed);
+				box.getChildren().removeAll(name,speed,card);
+				box.getChildren().addAll(name,speed, card);
+				
 	
 	}
 	

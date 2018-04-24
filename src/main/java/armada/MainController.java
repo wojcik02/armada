@@ -76,7 +76,7 @@ public class MainController {
 					BoardView.usunInfo(Right);
 					wybrany = false;
 				}
-				Jdbc.connect();
+				DataBase.connect();
 				activity = "Put Ship";
 			}
 		});
@@ -101,8 +101,8 @@ public class MainController {
 
 		if (BoardView.isNear(x, y, ships) == false && activity.equals("Put Ship")) {
 			
-			Ship newShip = new Ship(comboBox.getSelectionModel().getSelectedItem().toString(), 3);
-			Jdbc.disConnect();
+			Ship newShip = new Ship(comboBox.getSelectionModel().getSelectedItem().toString());
+			DataBase.disConnect();
 			BoardView.dodajStatek(Board, x, y, newShip);
 
 			ships.put(newShip.getShipOnBoard(), newShip);
