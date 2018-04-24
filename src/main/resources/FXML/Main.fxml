@@ -15,27 +15,32 @@
 <GridPane fx:id="MainPane" xmlns:fx="http://javafx.com/fxml/1"  fx:controller="armada.MainController"  hgap="10.0" vgap="10.0"   >
  <padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
 <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="75.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="70.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" percentHeight="80.0" vgrow="SOMETIMES"  />
     </rowConstraints>
 
-<ScrollPane  GridPane.rowIndex="0" GridPane.columnIndex="0">
+<ScrollPane fx:id="ScrollBoard" GridPane.rowIndex="0" GridPane.columnIndex="0">
 <AnchorPane fx:id="Board" onMouseClicked="#AddShip" prefHeight="900" prefWidth="1800" >
 </AnchorPane>
 </ScrollPane>
 
-<VBox  fx:id="Right" prefHeight="250" prefWidth="200" GridPane.rowIndex="0" GridPane.columnIndex="1" >
-<TextArea fx:id="Log"  prefHeight="25" editable="false">Armada 0.0.1</TextArea>
+
+<ScrollPane fx:id="ScrollBoard" GridPane.rowIndex="0" GridPane.columnIndex="1">
+
+<VBox  fx:id="Right" >
+  <padding><Insets top="10" right="25" bottom="25" left="25"/></padding>
+<TextArea fx:id="Log"  prefHeight="25"  prefWidth="250" editable="false">Armada 0.0.1</TextArea>
 </VBox>
+</ScrollPane>
 
 
 
 
 <HBox fx:id="buttons" GridPane.rowIndex="1" GridPane.columnIndex="0">
-<Button fx:id="newFleet" text="Nowa flota" onMouseClicked="#NewFleet"> </Button>
+<Button fx:id="newFleet" text="Dodaj Statek" onMouseClicked="#NewFleet"> </Button>
 <Button text="Przemieść" onMouseClicked="#MoveShip"> </Button>
 <Button text="Koniec Ruchu" onMouseClicked="#EndMove"> </Button>
 </HBox>

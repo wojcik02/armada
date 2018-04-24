@@ -10,7 +10,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 public class Ship {
-
+	
+	
+	static boolean isSelectedShip;
 	String name;
 	ArrayList<String> speedTable = new ArrayList<String>();
 	int speed;
@@ -52,6 +54,13 @@ public class Ship {
 	public void setSpeed(int speed) {
 		this.speed = speed;
 	}
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 
 	public Ship(String name) {
@@ -71,8 +80,10 @@ public class Ship {
 		shipOnBoard.getChildren().add(new ImageView(boardModel));
 		shipOnBoard.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent mouseEvent) {
-				if (BoardView.getSelected() == false) {
-					BoardView.clickOnShip(shipOnBoard);
+				BoardView.clickOnShip(shipOnBoard);
+
+				if (MainController.isSelected == false) {
+					System.out.println("Klikn¹³eœ na statek");
 					ColorAdjust colorAdjust = new ColorAdjust();
 					colorAdjust.setBrightness(0.5);
 					shipOnBoard.getChildren().get(0).setEffect(colorAdjust);
@@ -84,13 +95,7 @@ public class Ship {
 		
 	}
 
-	public String getName() {
-		return name;
-	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
 
 
 

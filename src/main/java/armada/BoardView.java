@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Light.Point;
 import javafx.scene.image.ImageView;
@@ -15,19 +16,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class BoardView {
-	
-	
-	public static boolean isSelected;
 
-	@FXML AnchorPane Board;
-	
-	//INFORMACJE ELEMNTY
+
+	@FXML
+	AnchorPane Board;
+
+	// INFORMACJE ELEMNTY
 	static Label name = new Label();
 	static Label speed = new Label();
-	static ImageView card = new ImageView();
+	static ImageView card;
+	static TextArea info;
 
-	
-	//MOVE TOKEN ELEMENTY
+	// MOVE TOKEN ELEMENTY
 	static Line Mline1 = new Line();
 	static Line Mline2 = new Line();
 	static Line Mline3 = new Line();
@@ -38,40 +38,34 @@ public class BoardView {
 	static double secoundAngel = 0;
 	static double thirdAngel = 0;
 
-	
 	public static void usunInfo(VBox box) {
-		box.getChildren().removeAll(name,speed, card);
+		box.getChildren().removeAll(info, card);
 	}
-	
+
 	public static void uzupe³nijInformacje(VBox box, Ship activeShip) {
 
 		name.setText(activeShip.getName());
-		speed.setText("Prêdkoœæ "+ activeShip.getSpeed());
+		speed.setText("Prêdkoœæ " + activeShip.getSpeed());
+		box.getChildren().removeAll(name, speed, card);
+
 		card = new ImageView(activeShip.getCardOfShip());
-			
-				box.getChildren().removeAll(name,speed,card);
-				box.getChildren().addAll(card);
-				
-	
-	}
-	
-	public static void deselectOnBoard(AnchorPane Board, Ship ship) {
 		
+	
+		box.getChildren().addAll(card);
+
+	}
+
+	public static void deselectOnBoard(AnchorPane Board, Ship ship) {
+
 		// Odznaczenie statku na planszy
 		ColorAdjust colorAdjust = new ColorAdjust();
 		colorAdjust.setBrightness(0);
 		ship.getShipOnBoard().getChildren().get(0).setEffect(colorAdjust);
 
-		// Wyl¹czenie atywnego statku
-		BoardView.setSelected(false);
-		
-
 		// Ustawienie aktywnoœci na 0
 		MainController.setActivity("Nothing");
-		
-	}
 
-	
+	}
 
 	// Pobranie lewego górnego roku Pane Statku
 	public static Point getleftCorner(Pane ship) {
@@ -102,7 +96,7 @@ public class BoardView {
 		}
 		return false;
 	}
-	
+
 	public static void dodajStatek(AnchorPane Board, double x, double y, Ship ship) {
 
 		ship.getShipOnBoard().setLayoutX(x);
@@ -110,31 +104,15 @@ public class BoardView {
 		Board.getChildren().add(ship.getShipOnBoard());
 	}
 
-
 	// Klikniecie na Pane Statku
 	public static void clickOnShip(Pane ship) {
-		if (isSelected) {
+		if (MainController.isSelected) {
 		} else if (MainController.getActivity().equals("Nothing")) {
 			MainController.selectedShip(ship);
-			isSelected = true;
 			MainController.setActivity("Move Ship");
 		}
 	}
-	
 
-
-	public static void isSelected() {
-		isSelected = true;
-	}
-
-	public static void setSelected(boolean isSelected) {
-		BoardView.isSelected = isSelected;
-	}
-
-	public static boolean getSelected() {
-		return isSelected;
-	}
-	
 
 	public static double getThirdAngel() {
 		return thirdAngel;
@@ -181,13 +159,12 @@ public class BoardView {
 		}
 	}
 
-	public static void putToken(AnchorPane Board,  Ship activeShip) {
+	public static void putToken(AnchorPane Board, Ship activeShip) {
 
 		Board.getChildren().removeAll(Mline1, Mline2, Mline3, Mline4);
 		activeShip.getSpeed();
-		 Pane ship = activeShip.getShipOnBoard();
-			Point leftCorner = BoardView.getleftCorner(ship);
-
+		Pane ship = activeShip.getShipOnBoard();
+		Point leftCorner = BoardView.getleftCorner(ship);
 
 		Mline1.setStartX(leftCorner.getX());
 		Mline1.setStartY(leftCorner.getY());
@@ -212,8 +189,10 @@ public class BoardView {
 		if (activeShip.getSpeed() > 2) {
 			Mline3.setStartX(Mline2.getEndX());
 			Mline3.setStartY(Mline2.getEndY());
-			Mline3.setEndX(Mline2.getEndX() + Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * 45);
-			Mline3.setEndY(Mline2.getEndY() - Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * 45);
+			Mline3.setEndX(
+					Mline2.getEndX() + Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * 45);
+			Mline3.setEndY(
+					Mline2.getEndY() - Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * 45);
 			endPoint.setX(Mline3.getEndX());
 			endPoint.setY(Mline3.getEndY());
 			Board.getChildren().addAll(Mline3);
@@ -222,13 +201,14 @@ public class BoardView {
 		if (activeShip.getSpeed() > 3) {
 			Mline4.setStartX(Mline3.getEndX());
 			Mline4.setStartY(Mline3.getEndY());
-			Mline4.setEndX(Mline3.getEndX()+ Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel)) * 45);
-			Mline4.setEndY(Mline3.getEndY()- Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel)) * 45);
+			Mline4.setEndX(Mline3.getEndX()
+					+ Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel)) * 45);
+			Mline4.setEndY(Mline3.getEndY()
+					- Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel)) * 45);
 			endPoint.setX(Mline4.getEndX());
 			endPoint.setY(Mline4.getEndY());
 			Board.getChildren().addAll(Mline4);
 		}
-		
 
 	}
 
