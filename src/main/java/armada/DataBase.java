@@ -2,10 +2,15 @@ package armada;
 
 import java.sql.*;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 
 public class DataBase {
 
     static Connection conn = null;
+	static ObservableList<String> shipNames =  FXCollections.observableArrayList( );
+
 
     public static void connect() {
     	
@@ -63,6 +68,23 @@ public class DataBase {
 		}
         
     	return imgUrl;
+    }
+    
+    public static ObservableList<String> getShipList() {
+        String sql = "SELECT NAME FROM SHIPS";
+    	Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs    = stmt.executeQuery(sql);
+			while(rs.next()) {
+				shipNames.add(rs.getString("NAME"));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        
+    	return shipNames;
     }
 
     

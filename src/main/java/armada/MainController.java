@@ -40,11 +40,11 @@ public class MainController {
 	boolean isSelected = false;
 	static String activity = "new";
 	static HashMap<Pane, Ship> ships = new HashMap<Pane, Ship>();
+	ComboBox<String> comboBox = new ComboBox<String>();
+	
 
 	ArrayList<Ship> rebelShips = new ArrayList<Ship>();
 	ArrayList<Ship> empireShips = new ArrayList<Ship>();
-	ShipYard shipyard = new ShipYard();
-	final ComboBox<String> comboBox = new ComboBox<String>(shipyard.getShipNames());
 
 	public MainController() {
 		System.out.println("Odpalamy gre");
@@ -66,6 +66,10 @@ public class MainController {
 	}
 
 	public void NewFleet(MouseEvent event) {
+		
+		DataBase.connect();
+		comboBox = new ComboBox<String>(DataBase.getShipList());
+		DataBase.disConnect();
 
 		Right.getChildren().add(comboBox);
 		buttons.getChildren().remove(newFleet);
