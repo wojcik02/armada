@@ -89,6 +89,27 @@ public class DataBase {
 	}
 
 	public static void main(String[] args) {
+
+	}
+	
+	
+
+	public static int getSizeDb(String name) {
+		int size = 0;
+
+		String sql = "SELECT SIZE FROM SHIPS WHERE NAME = '" + name + "'";
+
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			size = rs.getInt("SIZE");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return size;
 	}
 
 }

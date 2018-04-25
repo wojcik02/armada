@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Light.Point;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,7 +26,7 @@ import javafx.scene.layout.VBox;
 public class MainController {
 
 	@FXML
-	AnchorPane Board;
+	AnchorPane Board = new AnchorPane();
 	@FXML
 	ScrollPane ScrollBoard = new ScrollPane();
 	@FXML
@@ -35,9 +36,9 @@ public class MainController {
 	@FXML
 	VBox Right;
 	@FXML
-	Button addShipButton = new Button();
-	@FXML
 	Button newFleet;
+	@FXML
+	Button newBoard;
 	@FXML
 	HBox buttons;
 	ImageView card;
@@ -47,7 +48,6 @@ public class MainController {
 	int i = 1;
 	static boolean isSelected = false;
 	static boolean wybrany = false;
-
 	static int selectedLine = 1;
 	static String activity = "new";
 	static HashMap<Pane, Ship> ships = new HashMap<Pane, Ship>();
@@ -56,15 +56,12 @@ public class MainController {
 	ArrayList<Ship> empireShips = new ArrayList<Ship>();
 
 	public MainController() {
-		System.out.println("Odpalamy gre");
+		updateLog("Zaczynamy");
 		DataBase.connect();
 		comboBox = new ComboBox<String>(DataBase.getShipList());
 		DataBase.disConnect();
-		
-		
+
 	}
-     
-	
 
 	public static int getSelectedLine() {
 		return selectedLine;
@@ -74,42 +71,39 @@ public class MainController {
 		return selectedShip;
 	}
 
-	public static void setSelectedShip(Pane selectedShip) {
-	
-		MainController.selectedShip = selectedShip;
-	}
-
 	public void NewFleet(MouseEvent event) {
-		
+
 		try {
 			BoardView.deselectOnBoard(Board, activeShip);
 			BoardView.usunInfo(Right);
 			Right.getChildren().removeAll(card, comboBox);
-			MainPane.getChildren().remove(addShipButton);
 			isSelected = false;
 			wybrany = false;
 		} catch (Exception e) {
-			System.out.println("Nope, nie usun¹³êm");
 		}
 
-		
-		//TODO po³¹czenie z baz¹ przy budowaniu floty raz, zamkniecie przy rozpoczeciu rozgrywki
+		// TODO po³¹czenie z baz¹ przy budowaniu floty raz, zamkniecie przy rozpoczeciu
+		// rozgrywki
 		comboBox.setPrefWidth(250);
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
 				DataBase.connect();
-				
-				Right.getChildren().removeAll(card);
-				MainPane.getChildren().remove(addShipButton);
 
-				
-				
+				if (isSelected) {
+					BoardView.deselectOnBoard(Board, activeShip);
+					BoardView.usunInfo(Right);
+					isSelected = false;
+					System.out.println("Odznaczony Main 1");
+				}
+
+				activity = "Put Ship";
+
+				Right.getChildren().removeAll(card);
+
 				card = new ImageView(new Image(
 						"IMG/" + DataBase.getImgUrlDB(comboBox.getSelectionModel().getSelectedItem().toString()), 285,
 						490, false, false));
 				Right.getChildren().addAll(card);
-				addShipButton.setText("Dodaj");
-				MainPane.add(addShipButton,1,1);
 				DataBase.disConnect();
 			}
 		});
@@ -117,52 +111,31 @@ public class MainController {
 		Right.getChildren().add(comboBox);
 		buttons.getChildren().remove(newFleet);
 
-		addShipButton.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				if (isSelected) {
-					BoardView.deselectOnBoard(Board, activeShip);
-					BoardView.usunInfo(Right);
-					isSelected = false;
-					System.out.println("Odznaczony Main 1");
-				}
-				DataBase.connect();
-				activity = "Put Ship";
-			}
-		});
-
 	}
 
 	public void AddShip(MouseEvent event) {
-		
-		//ScrollBoard.setVvalue(1.0);  Przemieszczanei scrolla, na przysz³oœæ  
-		System.out.println("Klikn¹³eœ na plansze");
 
+		// ScrollBoard.setVvalue(1.0); Przemieszczanei scrolla, na przysz³oœæ
 
 		// TO DO Odznaczanie przez wcisniecie na plansze
-		
-		 if (isSelected) {
-			 	Log.setText("Brak Wybranego Statku");
-				BoardView.deselectOnBoard(Board, activeShip);
-				BoardView.usunInfo(Right);
-				Right.getChildren().removeAll(card, comboBox);
-				MainPane.getChildren().remove(addShipButton);
 
-				isSelected = false;
-				wybrany = false;
-			}  
-		 
-		 
-		 if (wybrany) {
+		if (isSelected) {
+
+			BoardView.deselectOnBoard(Board, activeShip);
+			BoardView.usunInfo(Right);
+			Right.getChildren().removeAll(card, comboBox);
+			isSelected = false;
+			wybrany = false;
+		}
+
+		if (wybrany) {
 			Right.getChildren().removeAll(card);
-			MainPane.getChildren().remove(addShipButton);
 
 			BoardView.uzupe³nijInformacje(Right, activeShip);
-			Log.setText("Wybrany statek: "+activeShip.getName());
+			updateLog("Wybrany statek: " + activeShip.getName());
+
 			isSelected = true;
-			System.out.println("Zaznaczony Main 1");
 		}
-		
-	
 
 		double x = event.getX() - 15;
 		double y = event.getY() - 30;
@@ -171,24 +144,33 @@ public class MainController {
 
 			Ship newShip = new Ship(comboBox.getSelectionModel().getSelectedItem().toString());
 			DataBase.disConnect();
+			x = event.getX() - newShip.getShipOnBoard().getPrefWidth() / 2;
+			y = event.getY() - newShip.getShipOnBoard().getPrefHeight() / 2;
 			BoardView.dodajStatek(Board, x, y, newShip);
-
 			ships.put(newShip.getShipOnBoard(), newShip);
-			Log.setText("Doda³em statek");
+			updateLog("Doda³em Statek: " + newShip.getName());
 			Right.getChildren().removeAll(card, comboBox);
-			MainPane.getChildren().remove(addShipButton);
-
-			buttons.getChildren().add(0,newFleet);
+			buttons.getChildren().add(0, newFleet);
 			activity = "Nothing";
 		}
 
-		
+	}
+
+	public void NewBoard(MouseEvent event) {
+
+		ImageView Background = new ImageView(new Image("IMG/space2.jpg", 1800, 900, false, false));
+		Board.getChildren().add(Background);
+		ColorAdjust colorAdjust = new ColorAdjust();
+		colorAdjust.setBrightness(0.2);
+		Board.getChildren().get(0).setEffect(colorAdjust);
+		newBoard.setDisable(true);
+
 	}
 
 	// Zaznaczenie wybranego Pane Statku
 
 	public static void selectedShip(Pane ship) {
-		
+
 		wybrany = true;
 		selectedShip = ship;
 		activeShip = ships.get(selectedShip);
@@ -213,7 +195,7 @@ public class MainController {
 
 			BoardView.selectMline(Board, selectedLine);
 
-			Log.setText("Doda³êm znacznik ruchu");
+			updateLog("Doda³em znacznik ruchu");
 
 			// Kontrola znacznika ruchu z klawiatury
 			MainPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -273,7 +255,7 @@ public class MainController {
 	public void EndMove(MouseEvent event) {
 		if (activity.equals("End Move")) {
 
-			Log.setText("Przemieœci³em statek");
+			updateLog("Przmieœci³em statek");
 			Point endPoint = BoardView.getEndPoint();
 
 			// Ustawienie koñcowego k¹ta obrotu po ruchu
@@ -289,7 +271,6 @@ public class MainController {
 			BoardView.usunInfo(Right);
 			isSelected = false;
 			System.out.println("Odznaczony Main 3");
-
 
 			// Wyczyszczenie planszy
 			BoardView.RemoveToken(Board);
@@ -313,6 +294,19 @@ public class MainController {
 
 	public static void setActivity(String activity) {
 		MainController.activity = activity;
+	}
+
+	int lineNumber = 0;
+
+	public void updateLog(String newText) {
+
+        
+
+		Log.setText(Log.getText() + "\n" + lineNumber + ": " + newText);
+		Log.selectPositionCaret(Log.getLength());
+		Log.deselect();
+		lineNumber++;
+
 	}
 
 }

@@ -71,15 +71,18 @@ public class BoardView {
 	public static Point getleftCorner(Pane ship) {
 		double angle = ship.getRotate();
 		ship.setRotate(0);
-		double xo = ship.getLayoutX() + 15;
-		double yo = ship.getLayoutY() + 30;
+		double ShipH = ship.getPrefHeight()/2;
+		double ShipV = ship.getPrefWidth()/2;
+		
+		double xo = ship.getLayoutX() + ShipV;
+		double yo = ship.getLayoutY() + ShipH;
 		ship.setRotate(angle);
 		double deltaX = Math.sin(
-				Math.toRadians((angle - Math.toDegrees(Math.asin(15 / Math.sqrt(Math.pow(15, 2) + Math.pow(30, 2)))))))
-				* Math.sqrt(Math.pow(15, 2) + Math.pow(30, 2));
+				Math.toRadians((angle - Math.toDegrees(Math.asin(ShipV / Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2)))))))
+				* Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2));
 		double deltaY = Math.cos(
-				Math.toRadians((angle - Math.toDegrees(Math.asin(15 / Math.sqrt(Math.pow(15, 2) + Math.pow(30, 2)))))))
-				* Math.sqrt(Math.pow(15, 2) + Math.pow(30, 2));
+				Math.toRadians((angle - Math.toDegrees(Math.asin(ShipV / Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2)))))))
+				* Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2));
 		Point leftCorner = new Point();
 		leftCorner.setX(xo + deltaX);
 		leftCorner.setY(yo - deltaY);
@@ -140,10 +143,15 @@ public class BoardView {
 
 	public static void selectMline(AnchorPane Board, int i) {
 
-		Mline1.setStroke(Color.BLACK);
-		Mline2.setStroke(Color.BLACK);
-		Mline3.setStroke(Color.BLACK);
-		Mline4.setStroke(Color.BLACK);
+		Mline1.setStroke(Color.GREY);
+		Mline2.setStroke(Color.GREY);
+		Mline3.setStroke(Color.GREY);
+		Mline4.setStroke(Color.GREY);
+		Mline1.setStrokeWidth(4);
+		Mline2.setStrokeWidth(4);
+		Mline3.setStrokeWidth(4);
+		Mline4.setStrokeWidth(4);
+
 
 		if (MainController.getSelectedLine() == 1) {
 			Mline1.setStroke(Color.RED);

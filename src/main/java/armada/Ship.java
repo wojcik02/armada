@@ -19,7 +19,7 @@ public class Ship {
 	Pane shipOnBoard;
 	Image cardOfShip;
 	Image boardModel;
-	
+	int size;
 	
 	public Image getCardOfShip() {
 		return cardOfShip;
@@ -64,26 +64,41 @@ public class Ship {
 
 
 	public Ship(String name) {
+		DataBase.connect();
 		
 		this.name = name;
 		this.speedTable.add("123");
 		this.speedTable.add("212");
 		this.speedTable.add("111");
 		this.speed=DataBase.getSpeedDB(name);
+		System.out.println("Ustawiam prêdkoœæ "+this.speed);
+		this.size = DataBase.getSizeDb(name);
 		String CardImgUlr= "IMG/"+DataBase.getImgUrlDB(name);
 		this.cardOfShip = new Image( CardImgUlr, 285, 490, false, false);
-		this.boardModel = new Image("IMG/cr92a-base.jpg", 30, 60, false, false);
 		this.shipOnBoard = new Pane();
+		switch(size) {
+		case 1: 
+			this.boardModel = new Image("IMG/cr92a-base.jpg", 41, 71, false, false);
+			shipOnBoard.setPrefSize(41, 71);
+        break;
+		case 2:
+			this.boardModel = new Image("IMG/cr92a-base.jpg", 61, 102, false, false);
+			shipOnBoard.setPrefSize(61, 102);
+        break;
+		case 3: 
+			this.boardModel = new Image("IMG/cr92a-base.jpg", 76, 129, false, false);
+			shipOnBoard.setPrefSize(76, 129);
+        break;
+		}
+		
 		shipOnBoard.setStyle("-fx-background-color: #000000");
-		shipOnBoard.setPrefSize(30, 60);
 		shipOnBoard.setRotate(0);
 		shipOnBoard.getChildren().add(new ImageView(boardModel));
 		shipOnBoard.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent mouseEvent) {
-				BoardView.clickOnShip(shipOnBoard);
 
 				if (MainController.isSelected == false) {
-					System.out.println("Klikn¹³eœ na statek");
+					BoardView.clickOnShip(shipOnBoard);
 					ColorAdjust colorAdjust = new ColorAdjust();
 					colorAdjust.setBrightness(0.5);
 					shipOnBoard.getChildren().get(0).setEffect(colorAdjust);
@@ -92,7 +107,7 @@ public class Ship {
 		});
 		
 		
-		
+	DataBase.disConnect();	
 	}
 
 
