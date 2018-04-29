@@ -3,24 +3,24 @@ package armada;
 import java.util.ArrayList;
 
 import javafx.event.EventHandler;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 public class Ship {
-	
-	
+
 	static boolean isSelectedShip;
 	String name;
 	ArrayList<String> speedTable = new ArrayList<String>();
 	int speed;
+	int maxSpeed;
 	Pane shipOnBoard;
 	Image cardOfShip;
 	Image boardModel;
 	int size;
-	
+	String fraction;
+
 	public Image getCardOfShip() {
 		return cardOfShip;
 	}
@@ -28,7 +28,7 @@ public class Ship {
 	public void setCardOfShip(Image cardOfShip) {
 		this.cardOfShip = cardOfShip;
 	}
-	
+
 	public Pane getShipOnBoard() {
 		return shipOnBoard;
 	}
@@ -38,9 +38,9 @@ public class Ship {
 	}
 
 	public int getSpeedTable(int step, int currentSpeed) {
-		String biere = Character.toString(speedTable.get(currentSpeed - 2).charAt(step - 1));
+		String biere = Character.toString(speedTable.get(currentSpeed - 1).charAt(step - 1));
 		return Integer.parseInt(biere);
-		
+
 	}
 
 	public void setSpeedTable(ArrayList<String> speedTable) {
@@ -54,6 +54,7 @@ public class Ship {
 	public void setSpeed(int speed) {
 		this.speed = speed;
 	}
+
 	public String getName() {
 		return name;
 	}
@@ -62,56 +63,54 @@ public class Ship {
 		this.name = name;
 	}
 
-
 	public Ship(String name) {
 		DataBase.connect();
-		
+
 		this.name = name;
-		this.speedTable.add("123");
-		this.speedTable.add("212");
-		this.speedTable.add("111");
-		this.speed=DataBase.getSpeedDB(name);
-		System.out.println("Ustawiam prêdkoœæ "+this.speed);
+		this.speedTable.add(DataBase.getSpeedTableDB(name).substring(0, 4));
+		this.speedTable.add(DataBase.getSpeedTableDB(name).substring(4, 8));
+		this.speedTable.add(DataBase.getSpeedTableDB(name).substring(8, 12));
+		this.speedTable.add(DataBase.getSpeedTableDB(name).substring(12, 16));
+		
+		System.out.println(DataBase.getSpeedTableDB(name).substring(0, 4));
+		System.out.println(DataBase.getSpeedTableDB(name).substring(4, 8));
+		System.out.println(DataBase.getSpeedTableDB(name).substring(8, 12));
+
+
+
+		this.speed = 3;
 		this.size = DataBase.getSizeDb(name);
-		String CardImgUlr= "IMG/"+DataBase.getImgUrlDB(name);
-		this.cardOfShip = new Image( CardImgUlr, 285, 490, false, false);
+		this.maxSpeed = DataBase.getMaxSpeedDB(name);
+		String CardImgUlr = "IMG/" + DataBase.getImgUrlDB(name);
+		this.cardOfShip = new Image(CardImgUlr, 285, 490, false, false);
+		this.fraction = DataBase.getFraction(name);
 		this.shipOnBoard = new Pane();
-		switch(size) {
-		case 1: 
+		switch (size) {
+		case 1:
 			this.boardModel = new Image("IMG/cr92a-base.jpg", 41, 71, false, false);
 			shipOnBoard.setPrefSize(41, 71);
-        break;
+			break;
 		case 2:
 			this.boardModel = new Image("IMG/cr92a-base.jpg", 61, 102, false, false);
 			shipOnBoard.setPrefSize(61, 102);
-        break;
-		case 3: 
+			break;
+		case 3:
 			this.boardModel = new Image("IMG/cr92a-base.jpg", 76, 129, false, false);
 			shipOnBoard.setPrefSize(76, 129);
-        break;
+			break;
 		}
-		
-		shipOnBoard.setStyle("-fx-background-color: #000000");
+
 		shipOnBoard.setRotate(0);
 		shipOnBoard.getChildren().add(new ImageView(boardModel));
 		shipOnBoard.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+			
 			public void handle(MouseEvent mouseEvent) {
-
-				if (MainController.isSelected == false) {
-					BoardView.clickOnShip(shipOnBoard);
-					ColorAdjust colorAdjust = new ColorAdjust();
-					colorAdjust.setBrightness(0.5);
-					shipOnBoard.getChildren().get(0).setEffect(colorAdjust);
-				}
+				MainController.newSelection = true;
+				MainController.newSelectedShip = shipOnBoard;
 			}
 		});
-		
-		
-	DataBase.disConnect();	
+
+		DataBase.disConnect();
 	}
-
-
-
-
 
 }

@@ -43,6 +43,24 @@ public class DataBase {
 
 		return speed;
 	}
+	
+	public static int getMaxSpeedDB(String name) {
+		int maxSpeed = 0;
+
+		String sql = "SELECT MAX_SPEED FROM SHIPS WHERE NAME = '" + name + "'";
+
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			maxSpeed = rs.getInt("MAX_SPEED");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return maxSpeed;
+	}
 
 	public static String getImgUrlDB(String name) {
 		String imgUrl = "";
@@ -60,6 +78,25 @@ public class DataBase {
 		}
 
 		return imgUrl;
+	}
+	
+	
+	public static String getSpeedTableDB(String name) {
+		String speedTable = "";
+
+		String sql = "SELECT SPEED_TABLE FROM SHIPS WHERE NAME = '" + name + "'";
+
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			speedTable = rs.getString("SPEED_TABLE");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return speedTable;
 	}
 
 	public static ObservableList<String> getShipList() {
@@ -110,6 +147,24 @@ public class DataBase {
 		}
 
 		return size;
+	}
+
+	public static String getFraction(String name) {
+		String fraction = "";
+
+		String sql = "SELECT FRAC FROM SHIPS WHERE NAME = '" + name + "'";
+
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			fraction = rs.getString("FRAC");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return fraction;
 	}
 
 }

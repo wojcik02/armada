@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Light.Point;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -15,8 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
-public class BoardView {
-
+public class GameBoard {
 
 	@FXML
 	AnchorPane Board;
@@ -27,7 +25,8 @@ public class BoardView {
 	static ImageView card;
 	static TextArea info;
 
-	// MOVE TOKEN ELEMENTY
+	static // MOVE TOKEN ELEMENTY
+	int moveTokenLength = 60;
 	static Line Mline1 = new Line();
 	static Line Mline2 = new Line();
 	static Line Mline3 = new Line();
@@ -37,6 +36,7 @@ public class BoardView {
 	static double firstAngel = 0;
 	static double secoundAngel = 0;
 	static double thirdAngel = 0;
+	static Pane endMarker = new Pane();
 
 	public static void usunInfo(VBox box) {
 		box.getChildren().removeAll(info, card);
@@ -44,13 +44,8 @@ public class BoardView {
 
 	public static void uzupe³nijInformacje(VBox box, Ship activeShip) {
 
-		name.setText(activeShip.getName());
-		speed.setText("Prêdkoœæ " + activeShip.getSpeed());
-		box.getChildren().removeAll(name, speed, card);
-
+		box.getChildren().removeAll(card);
 		card = new ImageView(activeShip.getCardOfShip());
-		
-	
 		box.getChildren().addAll(card);
 
 	}
@@ -58,12 +53,6 @@ public class BoardView {
 	public static void deselectOnBoard(AnchorPane Board, Ship ship) {
 
 		// Odznaczenie statku na planszy
-		ColorAdjust colorAdjust = new ColorAdjust();
-		colorAdjust.setBrightness(0);
-		ship.getShipOnBoard().getChildren().get(0).setEffect(colorAdjust);
-
-		// Ustawienie aktywnoœci na 0
-		MainController.setActivity("Nothing");
 
 	}
 
@@ -71,17 +60,17 @@ public class BoardView {
 	public static Point getleftCorner(Pane ship) {
 		double angle = ship.getRotate();
 		ship.setRotate(0);
-		double ShipH = ship.getPrefHeight()/2;
-		double ShipV = ship.getPrefWidth()/2;
-		
+		double ShipH = ship.getPrefHeight() / 2;
+		double ShipV = ship.getPrefWidth() / 2;
+
 		double xo = ship.getLayoutX() + ShipV;
 		double yo = ship.getLayoutY() + ShipH;
 		ship.setRotate(angle);
-		double deltaX = Math.sin(
-				Math.toRadians((angle - Math.toDegrees(Math.asin(ShipV / Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2)))))))
+		double deltaX = Math.sin(Math.toRadians(
+				(angle - Math.toDegrees(Math.asin(ShipV / Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2)))))))
 				* Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2));
-		double deltaY = Math.cos(
-				Math.toRadians((angle - Math.toDegrees(Math.asin(ShipV / Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2)))))))
+		double deltaY = Math.cos(Math.toRadians(
+				(angle - Math.toDegrees(Math.asin(ShipV / Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2)))))))
 				* Math.sqrt(Math.pow(ShipV, 2) + Math.pow(ShipH, 2));
 		Point leftCorner = new Point();
 		leftCorner.setX(xo + deltaX);
@@ -107,22 +96,12 @@ public class BoardView {
 		Board.getChildren().add(ship.getShipOnBoard());
 	}
 
-	// Klikniecie na Pane Statku
-	public static void clickOnShip(Pane ship) {
-		if (MainController.isSelected) {
-		} else if (MainController.getActivity().equals("Nothing")) {
-			MainController.selectedShip(ship);
-			MainController.setActivity("Move Ship");
-		}
-	}
-
-
 	public static double getThirdAngel() {
 		return thirdAngel;
 	}
 
 	public static void setThirdAngel(double thirdAngel) {
-		BoardView.thirdAngel = thirdAngel;
+		GameBoard.thirdAngel = thirdAngel;
 	}
 
 	public static double getFirstAngel() {
@@ -130,7 +109,7 @@ public class BoardView {
 	}
 
 	public static void setFirstAngel(double firstAngel) {
-		BoardView.firstAngel = firstAngel;
+		GameBoard.firstAngel = firstAngel;
 	}
 
 	public static double getSecoundAngel() {
@@ -138,7 +117,7 @@ public class BoardView {
 	}
 
 	public static void setSecoundAngel(double secoundAngel) {
-		BoardView.secoundAngel = secoundAngel;
+		GameBoard.secoundAngel = secoundAngel;
 	}
 
 	public static void selectMline(AnchorPane Board, int i) {
@@ -151,7 +130,6 @@ public class BoardView {
 		Mline2.setStrokeWidth(4);
 		Mline3.setStrokeWidth(4);
 		Mline4.setStrokeWidth(4);
-
 
 		if (MainController.getSelectedLine() == 1) {
 			Mline1.setStroke(Color.RED);
@@ -169,53 +147,67 @@ public class BoardView {
 
 	public static void putToken(AnchorPane Board, Ship activeShip) {
 
-		Board.getChildren().removeAll(Mline1, Mline2, Mline3, Mline4);
+		Board.getChildren().removeAll(Mline1, Mline2, Mline3, Mline4, endMarker);
 		activeShip.getSpeed();
 		Pane ship = activeShip.getShipOnBoard();
-		Point leftCorner = BoardView.getleftCorner(ship);
+		Point leftCorner = GameBoard.getleftCorner(ship);
 
 		Mline1.setStartX(leftCorner.getX());
 		Mline1.setStartY(leftCorner.getY());
-		Mline1.setEndX(leftCorner.getX() + Math.sin(Math.toRadians(ship.getRotate())) * 45);
-		Mline1.setEndY(leftCorner.getY() - Math.cos(Math.toRadians(ship.getRotate())) * 45);
+		Mline1.setEndX(leftCorner.getX() + Math.sin(Math.toRadians(ship.getRotate())) * moveTokenLength);
+		Mline1.setEndY(leftCorner.getY() - Math.cos(Math.toRadians(ship.getRotate())) * moveTokenLength);
+
+		Mline2.setStartX(Mline1.getEndX());
+		Mline2.setStartY(Mline1.getEndY());
+		Mline2.setEndX(Mline1.getEndX() + Math.sin(Math.toRadians(ship.getRotate() + firstAngel)) * moveTokenLength);
+		Mline2.setEndY(Mline1.getEndY() - Math.cos(Math.toRadians(ship.getRotate() + firstAngel)) * moveTokenLength);
+
 		endPoint.setX(Mline1.getEndX());
 		endPoint.setY(Mline1.getEndY());
-		Board.getChildren().addAll(Mline1);
+		Board.getChildren().addAll(Mline1, Mline2);
 
 		if (activeShip.getSpeed() > 1) {
-
-			Mline2.setStartX(Mline1.getEndX());
-			Mline2.setStartY(Mline1.getEndY());
-			Mline2.setEndX(Mline1.getEndX() + Math.sin(Math.toRadians(ship.getRotate() + firstAngel)) * 45);
-			Mline2.setEndY(Mline1.getEndY() - Math.cos(Math.toRadians(ship.getRotate() + firstAngel)) * 45);
-			endPoint.setX(Mline2.getEndX());
-			endPoint.setY(Mline2.getEndY());
-			Board.getChildren().addAll(Mline2);
-
-		}
-
-		if (activeShip.getSpeed() > 2) {
 			Mline3.setStartX(Mline2.getEndX());
 			Mline3.setStartY(Mline2.getEndY());
-			Mline3.setEndX(
-					Mline2.getEndX() + Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * 45);
-			Mline3.setEndY(
-					Mline2.getEndY() - Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * 45);
-			endPoint.setX(Mline3.getEndX());
-			endPoint.setY(Mline3.getEndY());
+			Mline3.setEndX(Mline2.getEndX()
+					+ Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * moveTokenLength);
+			Mline3.setEndY(Mline2.getEndY()
+					- Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * moveTokenLength);
+			endPoint.setX(Mline2.getEndX());
+			endPoint.setY(Mline2.getEndY());
 			Board.getChildren().addAll(Mline3);
 		}
 
-		if (activeShip.getSpeed() > 3) {
+		if (activeShip.getSpeed() > 2) {
 			Mline4.setStartX(Mline3.getEndX());
 			Mline4.setStartY(Mline3.getEndY());
 			Mline4.setEndX(Mline3.getEndX()
-					+ Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel)) * 45);
+					+ Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel))
+							* moveTokenLength);
 			Mline4.setEndY(Mline3.getEndY()
-					- Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel)) * 45);
-			endPoint.setX(Mline4.getEndX());
-			endPoint.setY(Mline4.getEndY());
+					- Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel))
+							* moveTokenLength);
+			endPoint.setX(Mline3.getEndX());
+			endPoint.setY(Mline3.getEndY());
 			Board.getChildren().addAll(Mline4);
+
+			endMarker.setPrefHeight(activeShip.getShipOnBoard().getPrefHeight());
+			endMarker.setLayoutX(activeShip.getShipOnBoard().getLayoutX());
+			endMarker.setLayoutY(activeShip.getShipOnBoard().getLayoutY());
+			endMarker.setRotate(activeShip.getShipOnBoard().getRotate());
+
+			endMarker.setPrefWidth(activeShip.getShipOnBoard().getPrefWidth());
+			endMarker.setStyle("-fx-background-color: rgba(0, 100, 100, 0.5); -fx-background-radius: 5;");
+
+			endMarker.setRotate(endMarker.getRotate() + GameBoard.getFirstAngel() + GameBoard.getSecoundAngel()
+					+ GameBoard.getThirdAngel());
+
+			// Ustawienie koñcowej pozycji po ruchu
+			Point leftCornerMarker = GameBoard.getleftCorner(endMarker);
+			endMarker.setLayoutX(activeShip.getShipOnBoard().getLayoutX() + endPoint.getX() - leftCornerMarker.getX());
+			endMarker.setLayoutY(activeShip.getShipOnBoard().getLayoutY() + endPoint.getY() - leftCornerMarker.getY());
+			Board.getChildren().addAll(endMarker);
+
 		}
 
 	}
@@ -228,7 +220,7 @@ public class BoardView {
 		firstAngel = 0;
 		secoundAngel = 0;
 		thirdAngel = 0;
-		Board.getChildren().removeAll(Mline1, Mline2, Mline3, Mline4);
+		Board.getChildren().removeAll(Mline1, Mline2, Mline3, Mline4, endMarker);
 	}
 
 }
