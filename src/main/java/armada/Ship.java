@@ -3,6 +3,7 @@ package armada;
 import java.util.ArrayList;
 
 import javafx.event.EventHandler;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -20,6 +21,7 @@ public class Ship {
 	Image boardModel;
 	int size;
 	String fraction;
+	
 
 	public Image getCardOfShip() {
 		return cardOfShip;
@@ -62,6 +64,24 @@ public class Ship {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public void Selected() {
+		
+		System.out.println("Klik na statek : "+ this.shipOnBoard);
+		
+		ColorAdjust colorAdjust = new ColorAdjust();
+		colorAdjust.setBrightness(0.5); 
+	    MainController.selectedShip(this.shipOnBoard);
+	    MainController.isSelected = true;
+		
+	}
+	
+	public void Deselect() {
+		ColorAdjust colorAdjust = new ColorAdjust();
+		colorAdjust.setBrightness(0); 
+	    this.shipOnBoard.getChildren().get(0).setEffect(colorAdjust);
+		
+	}
 
 	public Ship(String name) {
 		DataBase.connect();
@@ -71,13 +91,6 @@ public class Ship {
 		this.speedTable.add(DataBase.getSpeedTableDB(name).substring(4, 8));
 		this.speedTable.add(DataBase.getSpeedTableDB(name).substring(8, 12));
 		this.speedTable.add(DataBase.getSpeedTableDB(name).substring(12, 16));
-		
-		System.out.println(DataBase.getSpeedTableDB(name).substring(0, 4));
-		System.out.println(DataBase.getSpeedTableDB(name).substring(4, 8));
-		System.out.println(DataBase.getSpeedTableDB(name).substring(8, 12));
-
-
-
 		this.speed = 3;
 		this.size = DataBase.getSizeDb(name);
 		this.maxSpeed = DataBase.getMaxSpeedDB(name);
@@ -96,17 +109,20 @@ public class Ship {
 			break;
 		case 3:
 			this.boardModel = new Image("IMG/cr92a-base.jpg", 76, 129, false, false);
-			shipOnBoard.setPrefSize(76, 129);
+			this.shipOnBoard.setPrefSize(76, 129);
 			break;
 		}
 
-		shipOnBoard.setRotate(0);
+	    shipOnBoard.setRotate(0);
 		shipOnBoard.getChildren().add(new ImageView(boardModel));
 		shipOnBoard.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 			
 			public void handle(MouseEvent mouseEvent) {
-				MainController.newSelection = true;
-				MainController.newSelectedShip = shipOnBoard;
+				
+				Selected();
+				
+				
+				
 			}
 		});
 

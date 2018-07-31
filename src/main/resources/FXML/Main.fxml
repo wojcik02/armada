@@ -28,9 +28,7 @@
      prefHeight="25"  prefWidth="250" editable="false" GridPane.rowIndex="0" GridPane.columnIndex="0">Armada 0.0.1</TextArea>
     
 
-<ScrollPane fx:id="ScrollBoard" GridPane.rowIndex="1" GridPane.columnIndex="0">
-<AnchorPane fx:id="Board" onMouseClicked="#AddShip" prefHeight="900" prefWidth="1800" >
-</AnchorPane>
+<ScrollPane fx:id="MainBoard" GridPane.rowIndex="1" GridPane.columnIndex="0">
 </ScrollPane>
 
 
@@ -49,6 +47,8 @@
 <HBox fx:id="buttons" GridPane.rowIndex="2" GridPane.columnIndex="0" spacing="10">
 <Button fx:id="newFleet" text="Dodaj Statek" onMouseClicked="#NewFleet"> </Button>
 <Button text="Przemieść" onMouseClicked="#MoveShip"> </Button>
+<Button text="Atak" onMouseClicked="#Attack"> </Button>
+
 <Button text="Koniec Ruchu" onMouseClicked="#EndMove"> </Button>
 
 </HBox>

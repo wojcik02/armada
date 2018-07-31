@@ -3,11 +3,17 @@ package armada;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Light.Point;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -18,6 +24,8 @@ public class GameBoard {
 
 	@FXML
 	AnchorPane Board;
+	
+	
 
 	// INFORMACJE ELEMNTY
 	static Label name = new Label();
@@ -26,7 +34,7 @@ public class GameBoard {
 	static TextArea info;
 
 	static // MOVE TOKEN ELEMENTY
-	int moveTokenLength = 60;
+	int moveTokenLength = 65;
 	static Line Mline1 = new Line();
 	static Line Mline2 = new Line();
 	static Line Mline3 = new Line();
@@ -37,7 +45,52 @@ public class GameBoard {
 	static double secoundAngel = 0;
 	static double thirdAngel = 0;
 	static Pane endMarker = new Pane();
+	
+	
+	public GameBoard() {
+		
+		this.Board = new AnchorPane();
+		ImageView Background = new ImageView(new Image("IMG/space2.jpg", 1800, 900, false, false));
+		Board.getChildren().add(Background);
+		ColorAdjust colorAdjust = new ColorAdjust();
+		colorAdjust.setBrightness(0.2);
+		Board.getChildren().get(0).setEffect(colorAdjust);
+		Board.setOnMouseClicked(new BoardClickHandle());
+		System.out.println("Stworzy³em planszê");
+	}
+	
+	
+	
+	
+	 private class BoardClickHandle implements EventHandler<MouseEvent>
+	    {
+	        
+	        public void handle(MouseEvent event)
+	        {
+	        	double x = event.getX();
+	        	double y = event.getY();
+	        	MainController.gameEvent(x,y);
+	        }
+	        
+	        
+	    }
+	
+	public  AnchorPane getBoard() {
+		return Board;
+	}
+	
+	public void addShip(double x, double y, Ship newShip) {
+		newShip.getShipOnBoard().setLayoutX(x);
+		newShip.getShipOnBoard().setLayoutY(y);
+		System.out.println("Dodaje statek");
+	    this.Board.getChildren().add(newShip.getShipOnBoard());
+	}
 
+
+
+	
+	
+	
 	public static void usunInfo(VBox box) {
 		box.getChildren().removeAll(info, card);
 	}
@@ -89,12 +142,7 @@ public class GameBoard {
 		return false;
 	}
 
-	public static void dodajStatek(AnchorPane Board, double x, double y, Ship ship) {
-
-		ship.getShipOnBoard().setLayoutX(x);
-		ship.getShipOnBoard().setLayoutY(y);
-		Board.getChildren().add(ship.getShipOnBoard());
-	}
+	
 
 	public static double getThirdAngel() {
 		return thirdAngel;
@@ -161,35 +209,39 @@ public class GameBoard {
 		Mline2.setStartY(Mline1.getEndY());
 		Mline2.setEndX(Mline1.getEndX() + Math.sin(Math.toRadians(ship.getRotate() + firstAngel)) * moveTokenLength);
 		Mline2.setEndY(Mline1.getEndY() - Math.cos(Math.toRadians(ship.getRotate() + firstAngel)) * moveTokenLength);
+		
+		Mline3.setStartX(Mline2.getEndX());
+		Mline3.setStartY(Mline2.getEndY());
+		Mline3.setEndX(Mline2.getEndX()
+				+ Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * moveTokenLength);
+		Mline3.setEndY(Mline2.getEndY()
+				- Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * moveTokenLength);
+		
+		Mline4.setStartX(Mline3.getEndX());
+		Mline4.setStartY(Mline3.getEndY());
+		Mline4.setEndX(Mline3.getEndX()
+				+ Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel))
+						* moveTokenLength);
+		Mline4.setEndY(Mline3.getEndY()
+				- Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel))
+						* moveTokenLength);
 
 		endPoint.setX(Mline1.getEndX());
 		endPoint.setY(Mline1.getEndY());
-		Board.getChildren().addAll(Mline1, Mline2);
+		Board.getChildren().addAll(Mline1, Mline2, Mline3, Mline4);
 
 		if (activeShip.getSpeed() > 1) {
-			Mline3.setStartX(Mline2.getEndX());
-			Mline3.setStartY(Mline2.getEndY());
-			Mline3.setEndX(Mline2.getEndX()
-					+ Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * moveTokenLength);
-			Mline3.setEndY(Mline2.getEndY()
-					- Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel)) * moveTokenLength);
+			
 			endPoint.setX(Mline2.getEndX());
 			endPoint.setY(Mline2.getEndY());
-			Board.getChildren().addAll(Mline3);
 		}
 
 		if (activeShip.getSpeed() > 2) {
-			Mline4.setStartX(Mline3.getEndX());
-			Mline4.setStartY(Mline3.getEndY());
-			Mline4.setEndX(Mline3.getEndX()
-					+ Math.sin(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel))
-							* moveTokenLength);
-			Mline4.setEndY(Mline3.getEndY()
-					- Math.cos(Math.toRadians(ship.getRotate() + secoundAngel + firstAngel + thirdAngel))
-							* moveTokenLength);
+			
 			endPoint.setX(Mline3.getEndX());
 			endPoint.setY(Mline3.getEndY());
-			Board.getChildren().addAll(Mline4);
+		}
+		
 
 			endMarker.setPrefHeight(activeShip.getShipOnBoard().getPrefHeight());
 			endMarker.setLayoutX(activeShip.getShipOnBoard().getLayoutX());
@@ -208,7 +260,7 @@ public class GameBoard {
 			endMarker.setLayoutY(activeShip.getShipOnBoard().getLayoutY() + endPoint.getY() - leftCornerMarker.getY());
 			Board.getChildren().addAll(endMarker);
 
-		}
+		
 
 	}
 
@@ -222,5 +274,9 @@ public class GameBoard {
 		thirdAngel = 0;
 		Board.getChildren().removeAll(Mline1, Mline2, Mline3, Mline4, endMarker);
 	}
+
+	
+
+
 
 }

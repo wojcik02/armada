@@ -11,7 +11,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Light;
 import javafx.scene.effect.Light.Point;
+import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -22,18 +24,20 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class MainController {
 
 	@FXML
-	AnchorPane Board = new AnchorPane();
-	@FXML
 	ScrollPane ScrollBoard = new ScrollPane();
+	@FXML
+	ScrollPane MainBoard = new ScrollPane();
 	@FXML
 	GridPane MainPane = new GridPane();
 	@FXML
 	TextArea Log = new TextArea();
 	@FXML
+
 	VBox Right;
 	@FXML
 	Button newFleet;
@@ -41,41 +45,75 @@ public class MainController {
 	Button newBoard;
 	@FXML
 	HBox buttons;
-	ImageView card;
+	static ImageView card;
 
 	int lineNumber = 0;
 	static Ship activeShip;
-	String phase;
+	static Pane selectedShipTarget;
+	static Ship Target;
 	static Pane newSelectedShip;
 	static Pane selectedShip;
 	int i = 1;
 	static boolean isSelected = false;
 	static boolean newSelection = false;
-
-	static boolean wybrany = false;
+	static boolean attack = false;
+	boolean wybrany = false;
 	static int selectedLine = 2;
 	static String activity = "new";
 	static HashMap<Pane, Ship> ships = new HashMap<Pane, Ship>();
-	ComboBox<String> comboBox = new ComboBox<String>();
+	static ComboBox<String> comboBox = new ComboBox<String>();
 	ArrayList<Ship> rebelShips = new ArrayList<Ship>();
 	ArrayList<Ship> empireShips = new ArrayList<Ship>();
+
+	static GameBoard Board = new GameBoard();
+	AnchorPane BattleGround = Board.getBoard();
 
 	public MainController() {
 
 	}
 
-	@FXML
 	public void initialize() {
-		ImageView Background = new ImageView(new Image("IMG/space2.jpg", 1800, 900, false, false));
-		Board.getChildren().add(Background);
-		ColorAdjust colorAdjust = new ColorAdjust();
-		colorAdjust.setBrightness(0.2);
-		Board.getChildren().get(0).setEffect(colorAdjust);
+
+		MainBoard.setContent(Board.getBoard());
 		DataBase.connect();
 		comboBox = new ComboBox<String>(DataBase.getShipList());
 		DataBase.disConnect();
+		
 
 	}
+
+	public static void gameEvent(double x, double y) {
+		System.out.println("Robie zdarzenie");
+
+			if(activity.equals("Put Ship")) {
+			Ship newShip = new Ship(comboBox.getSelectionModel().getSelectedItem().toString());
+			x = x - newShip.getShipOnBoard().getPrefWidth() / 2;
+			y = y - newShip.getShipOnBoard().getPrefHeight() / 2;
+			Board.addShip(x, y, newShip);
+			ships.put(newShip.getShipOnBoard(), newShip);
+		    //updateLog("Doda³em Statek: " + newShip.getName());
+			// Right.getChildren().removeAll(card, comboBox);
+		   // buttons.getChildren().add(0, newFleet);
+			activity = "Nothing";
+			}
+			
+			if (isSelected && activity.equals("Nothing")) {
+			//	GameBoard.deselectOnBoard(BattleGround, activeShip);
+				activeShip.Deselect();
+			
+				//GameBoard.usunInfo(Right);
+			//	Right.getChildren().removeAll(card, comboBox);
+				isSelected = false;
+			//	GameBoard.RemoveToken(BattleGround);
+				activity = "Nothing";
+
+			}
+			
+
+
+	}
+	
+	
 
 	public static int getSelectedLine() {
 		return selectedLine;
@@ -88,7 +126,8 @@ public class MainController {
 	public void NewFleet(MouseEvent event) {
 
 		try {
-			GameBoard.deselectOnBoard(Board, activeShip);
+
+			GameBoard.deselectOnBoard(BattleGround, activeShip);
 			GameBoard.usunInfo(Right);
 			Right.getChildren().removeAll(card, comboBox);
 			isSelected = false;
@@ -104,7 +143,7 @@ public class MainController {
 				DataBase.connect();
 
 				if (isSelected) {
-					GameBoard.deselectOnBoard(Board, activeShip);
+					GameBoard.deselectOnBoard(BattleGround, activeShip);
 					GameBoard.usunInfo(Right);
 					isSelected = false;
 				}
@@ -124,21 +163,23 @@ public class MainController {
 
 	}
 
-	//Klikniecie na plaszê
+	// Klikniecie na plaszê
+
 	public void AddShip(MouseEvent event) {
 
 		// ScrollBoard.setVvalue(1.0); Przemieszczanei scrolla, na przysz³oœæ
 
-		if (isSelected) {
-			GameBoard.deselectOnBoard(Board, activeShip);
+		if (isSelected && activity.equals("Nothing")) {
+			GameBoard.deselectOnBoard(BattleGround, activeShip);
+			activeShip.Deselect();
 			ColorAdjust colorAdjust = new ColorAdjust();
 			colorAdjust.setBrightness(0);
 			selectedShip.getChildren().get(0).setEffect(colorAdjust);
 			GameBoard.usunInfo(Right);
 			Right.getChildren().removeAll(card, comboBox);
 			isSelected = false;
-			GameBoard.RemoveToken(Board);
-			activity="Nothing";
+			GameBoard.RemoveToken(BattleGround);
+			activity = "Nothing";
 
 		}
 
@@ -151,35 +192,29 @@ public class MainController {
 			newSelection = false;
 		}
 
-		// Dodanie statku na plansze
-
-		if (activity.equals("Put Ship")) {
-			Ship newShip = new Ship(comboBox.getSelectionModel().getSelectedItem().toString());
-			double x = event.getX() - newShip.getShipOnBoard().getPrefWidth() / 2;
-			double y = event.getY() - newShip.getShipOnBoard().getPrefHeight() / 2;
-
-			if (GameBoard.isNear(x, y, ships) == false) {
-
-				GameBoard.dodajStatek(Board, x, y, newShip);
-				ships.put(newShip.getShipOnBoard(), newShip);
-				updateLog("Doda³em Statek: " + newShip.getName());
-				Right.getChildren().removeAll(card, comboBox);
-				buttons.getChildren().add(0, newFleet);
-				activity = "Nothing";
-			}
-		}
-
 	}
 
 	// Zaznaczenie wybranego Pane Statku
 
 	public static void selectedShip(Pane newSelectedShip) {
 
-		selectedShip = newSelectedShip;
-		activeShip = ships.get(selectedShip);
-		ColorAdjust colorAdjust = new ColorAdjust();
-		colorAdjust.setBrightness(0.5);
-		selectedShip.getChildren().get(0).setEffect(colorAdjust);
+		activeShip = ships.get(newSelectedShip);
+		System.out.println(activeShip);
+	
+
+	}
+
+	public static void selectedTarget(Pane newSelectedShipTarget) {
+
+		selectedShipTarget = newSelectedShipTarget;
+		Target = ships.get(selectedShipTarget);
+		Lighting lighting = new Lighting();
+		lighting.setDiffuseConstant(1.0);
+		lighting.setSpecularConstant(0.0);
+		lighting.setSpecularExponent(0.0);
+		lighting.setSurfaceScale(0.0);
+		lighting.setLight(new Light.Distant(100, 100, Color.RED));
+		selectedShipTarget.getChildren().get(0).setEffect(lighting);
 
 	}
 
@@ -190,24 +225,15 @@ public class MainController {
 		if (isSelected == true) {
 
 			// Pobranie prêdkoœci i k¹tów aktywnego statku
-			 final int currentSpeed = activeShip.getSpeed();
+			final int currentSpeed = activeShip.getSpeed();
 			final int firstTurnLimit = activeShip.getSpeedTable(1, currentSpeed) * 15;
 			final int secoundTurnLimit = activeShip.getSpeedTable(2, currentSpeed) * 15;
 			final int thirdTurnLimit = activeShip.getSpeedTable(3, currentSpeed) * 15;
-		//	final int fourthTurnLimit = activeShip.getSpeedTable(4, currentSpeed) * 15;
-			
-			
-			System.out.println(activeShip.getSpeedTable(1, currentSpeed));
-			System.out.println(activeShip.getSpeedTable(2, currentSpeed));
-
-			System.out.println(activeShip.getSpeedTable(3, currentSpeed));
-
-
-			
+			// final int fourthTurnLimit = activeShip.getSpeedTable(4, currentSpeed) * 15;
 
 			// Dodanie znacznika ruchu
-			GameBoard.putToken(Board, activeShip);
-			GameBoard.selectMline(Board, selectedLine);
+			GameBoard.putToken(BattleGround, activeShip);
+			GameBoard.selectMline(BattleGround, selectedLine);
 			updateLog("Doda³em znacznik ruchu");
 
 			// Kontrola znacznika ruchu z klawiatury
@@ -224,7 +250,7 @@ public class MainController {
 						if (selectedLine == 4 && GameBoard.getThirdAngel() < thirdTurnLimit) {
 							GameBoard.setThirdAngel(GameBoard.getThirdAngel() + 15);
 						}
-						GameBoard.putToken(Board, activeShip);
+						GameBoard.putToken(BattleGround, activeShip);
 					}
 
 					// Lewo
@@ -238,13 +264,13 @@ public class MainController {
 						if (selectedLine == 4 && GameBoard.getThirdAngel() > -thirdTurnLimit) {
 							GameBoard.setThirdAngel(GameBoard.getThirdAngel() - 15);
 						}
-						GameBoard.putToken(Board, activeShip);
+						GameBoard.putToken(BattleGround, activeShip);
 					}
 					// Góra
 					if (event1.getCode().equals(KeyCode.W)) {
-						if (selectedLine < currentSpeed+1) {
+						if (selectedLine < currentSpeed + 1) {
 							selectedLine = selectedLine + 1;
-							GameBoard.selectMline(Board, selectedLine);
+							GameBoard.selectMline(BattleGround, selectedLine);
 
 						}
 					}
@@ -253,7 +279,7 @@ public class MainController {
 
 						if (selectedLine > 2) {
 							selectedLine = selectedLine - 1;
-							GameBoard.selectMline(Board, selectedLine);
+							GameBoard.selectMline(BattleGround, selectedLine);
 
 						}
 					}
@@ -263,6 +289,14 @@ public class MainController {
 			MainPane.setFocusTraversable(true);
 			activity = "End Move";
 		}
+	}
+
+	public void Attack(MouseEvent event) {
+		if (isSelected) {
+			activity = "Select Target";
+
+		}
+
 	}
 
 	public void EndMove(MouseEvent event) {
@@ -287,7 +321,7 @@ public class MainController {
 			isSelected = false;
 
 			// Wyczyszczenie planszy
-			GameBoard.RemoveToken(Board);
+			GameBoard.RemoveToken(BattleGround);
 			GameBoard.usunInfo(Right);
 
 			// Wy³¹czenie aktywnosci kalwiatury
