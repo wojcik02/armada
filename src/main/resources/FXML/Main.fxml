@@ -39,7 +39,6 @@
 <HBox fx:id="buttons" GridPane.rowIndex="2" GridPane.columnIndex="0" spacing="10">
 <Button fx:id="newFleet" text="Dodaj Statek" onMouseClicked="#NewFleet"> </Button>
 <Button text="Przemieść" onMouseClicked="#MoveShip"> </Button>
-<Button text="Atak" onMouseClicked="#Attack"> </Button>
 
 <Button text="Koniec Ruchu" onMouseClicked="#EndMove"> </Button>
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javafx.event.EventHandler;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Light.Point;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -63,6 +64,18 @@ public class Ship {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public void Move() {
+		
+		Point endPoint = MoveToken.endPoint;
+
+		this.shipOnBoard.setRotate(this.shipOnBoard.getRotate() + MoveToken.firstAngel + MoveToken.secoundAngel+ MoveToken.thirdAngel);
+
+		Point leftCorner = GameBoard.getleftCorner(this.shipOnBoard);
+		this.shipOnBoard.setLayoutX(this.shipOnBoard.getLayoutX() + endPoint.getX() - leftCorner.getX());
+		this.shipOnBoard.setLayoutY(this.shipOnBoard.getLayoutY() + endPoint.getY() - leftCorner.getY());
+		Deselect();
+	}
 
 	public void Selected() {
 
@@ -79,6 +92,8 @@ public class Ship {
 		colorAdjust.setBrightness(0);
 		this.shipOnBoard.getChildren().get(0).setEffect(colorAdjust);
 		MainController.isSelected = false;
+		MainController.activity="Nothing";
+		MainController.Board.cleanBoard();
 
 	}
 
@@ -93,10 +108,10 @@ public class Ship {
 		this.speed = 3;
 		this.size = DataBase.getSizeDb(name);
 		this.maxSpeed = DataBase.getMaxSpeedDB(name);
-		String CardImgUlr = "IMG/" + DataBase.getImgUrlDB(name);
-		this.cardOfShip = new Image(CardImgUlr, 285, 490, false, false);
+		this.cardOfShip = new Image("IMG/" + DataBase.getImgUrlDB(name), 285, 490, false, false);
 		this.fraction = DataBase.getFraction(name);
 		this.shipOnBoard = new Pane();
+		
 		switch (size) {
 		case 1:
 			this.boardModel = new Image("IMG/cr92a-base.jpg", 41, 71, false, false);
@@ -124,8 +139,5 @@ public class Ship {
 		DataBase.disConnect();
 	}
 
-	public Ship() {
-		// TODO Auto-generated constructor stub
-	}
 
 }
