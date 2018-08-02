@@ -21,7 +21,6 @@ public class Ship {
 	Image boardModel;
 	int size;
 	String fraction;
-	
 
 	public Image getCardOfShip() {
 		return cardOfShip;
@@ -64,23 +63,23 @@ public class Ship {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public void Selected() {
-		
-		System.out.println("Klik na statek : "+ this.shipOnBoard);
-		
+
+		System.out.println("Klik na statek : " + this.shipOnBoard);
 		ColorAdjust colorAdjust = new ColorAdjust();
-		colorAdjust.setBrightness(0.5); 
-	    MainController.selectedShip(this.shipOnBoard);
-	    MainController.isSelected = true;
-		
+		colorAdjust.setBrightness(0.5);
+		this.shipOnBoard.getChildren().get(0).setEffect(colorAdjust);
+
 	}
-	
+
 	public void Deselect() {
+
 		ColorAdjust colorAdjust = new ColorAdjust();
-		colorAdjust.setBrightness(0); 
-	    this.shipOnBoard.getChildren().get(0).setEffect(colorAdjust);
-		
+		colorAdjust.setBrightness(0);
+		this.shipOnBoard.getChildren().get(0).setEffect(colorAdjust);
+		MainController.isSelected = false;
+
 	}
 
 	public Ship(String name) {
@@ -113,20 +112,20 @@ public class Ship {
 			break;
 		}
 
-	    shipOnBoard.setRotate(0);
+		shipOnBoard.setRotate(0);
 		shipOnBoard.getChildren().add(new ImageView(boardModel));
 		shipOnBoard.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-			
+
 			public void handle(MouseEvent mouseEvent) {
-				
-				Selected();
-				
-				
-				
+				MainController.selectedShip(shipOnBoard);
 			}
 		});
 
 		DataBase.disConnect();
+	}
+
+	public Ship() {
+		// TODO Auto-generated constructor stub
 	}
 
 }

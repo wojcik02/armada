@@ -24,8 +24,6 @@
         
     </rowConstraints>
     
-    <TextArea fx:id="Log"         style="-fx-control-inner-background:#000000; -fx-font-family: Consolas; -fx-highlight-fill: #00ff00; -fx-highlight-text-fill: #000000; -fx-text-fill: #00ff00; "
-     prefHeight="25"  prefWidth="250" editable="false" GridPane.rowIndex="0" GridPane.columnIndex="0">Armada 0.0.1</TextArea>
     
 
 <ScrollPane fx:id="MainBoard" GridPane.rowIndex="1" GridPane.columnIndex="0">
@@ -33,12 +31,6 @@
 
 
 <ScrollPane fx:id="ScrollBoard" GridPane.rowIndex="1" GridPane.columnIndex="1"   >
-
-<VBox spacing="15" fx:id="Right" prefWidth="300" alignment="CENTER"  >
-
- <padding><Insets top="15" right="25" bottom="25" left="25"/></padding>
-
-</VBox>
 </ScrollPane>
 
 
